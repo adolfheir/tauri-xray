@@ -1,0 +1,32 @@
+{
+    "outbounds": [
+        {
+            "protocol": "vless",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "38.47.125.210",
+                        "port": 443,
+                        "users": [
+                            {
+                                "id": "ee7bd622-a194-4d79-a5b9-ef4ea65f4afe",
+                                "encryption": "none",
+                                "flow": "xtls-rprx-vision"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "tcp",
+                "security": "tls",
+                "tlsSettings": {
+                    "serverName": "jp.fq123hub.xyz",
+                    "allowInsecure": false,
+                    "fingerprint": "chrome"
+                }
+            },
+            "tag": "proxy"
+        }
+    ]
+}

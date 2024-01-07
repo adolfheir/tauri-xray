@@ -1,0 +1,15 @@
+{
+    "routing": {
+        "domainStrategy": "AsIs",
+        "rules": [
+            {
+                "type": "field",
+                "inboundTag": [
+                    "inbound-socks",
+                    "inbound-http"
+                ],
+                "outboundTag": "direct"
+            }
+        ]
+    }
+}

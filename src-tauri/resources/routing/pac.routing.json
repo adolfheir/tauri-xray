@@ -1,0 +1,54 @@
+{
+    "routing": {
+        "domainStrategy": "IPIfNonMatch",
+        "rules": [
+            {
+                "type": "field",
+                "outboundTag": "proxy",
+                "domain": [
+                    "domain:youtube.com",
+                    "domain:awwwards.com",
+                    "domain:pnpm.io",
+                    "domain:p5js.org",
+                    "domain:threejs.org",
+                    "domain:dashif.org",
+                    "domain:budibase.app",
+                    "domain:codesandbox.io",
+                    "domain:csb.app",
+                    "domain:travistidwell.com",
+                    "domain:vercel.app",
+                    "domain:angularindepth.com",
+                    "regexp:github\\..*",
+                    "regexp:githubusercontent\\..*",
+                    "regexp:vitejs\\..*",
+                    "regexp:sourcegraph\\..*",
+                    "regexp:metamask\\..*",
+                    "regexp:vmiss\\..*"
+                ]
+            },
+            {
+                "type": "field",
+                "outboundTag": "freedom",
+                "domain": [
+                    "domain:pkg.go.dev",
+                    "domain:godoc.org"
+                ]
+            },
+            {
+                "type": "field",
+                "outboundTag": "proxy",
+                "domain": [
+                    "geosite:geolocation-!cn",
+                    "tld-!cn"
+                ]
+            },
+            {
+                "type": "field",
+                "outboundTag": "proxy",
+                "ip": [
+                    "geoip:telegram"
+                ]
+            }
+        ]
+    }
+}
