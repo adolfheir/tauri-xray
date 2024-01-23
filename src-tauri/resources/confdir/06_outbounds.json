@@ -1,8 +1,0 @@
-{
-    "outbounds": [
-        {
-            "protocol": "blackhole",
-            "tag": "block"
-        }
-    ]
-}

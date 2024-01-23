@@ -3,7 +3,7 @@
         {
             "tag": "inbound-socks",
             "listen": "0.0.0.0",
-            "port": 10808,
+            "port": 10008,
             "protocol": "socks",
             "settings": {
                 "udp": true
@@ -19,7 +19,7 @@
         {
             "tag": "inbound-http",
             "listen": "0.0.0.0",
-            "port": 10809,
+            "port": 10009,
             "protocol": "http",
             "sniffing": {
                 "enabled": true,

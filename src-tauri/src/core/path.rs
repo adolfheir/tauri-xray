@@ -4,13 +4,12 @@ use once_cell::sync::OnceCell;
 use std::fs;
 use std::path::PathBuf;
 use tauri::{
-    api::path::{home_dir, resource_dir},
-    App,
+    api::path::{home_dir},
 };
 
 static APP_DIR: &str = "tauri-xray";
 static XRAY_PID: &str = "xray.pid";
-static CONFIG_JSON: &str = "conig.json";
+static CONFIG_JSON: &str = "config.json";
 
 //维护全局 resource dir
 pub static RESOLVE: OnceCell<tauri::PathResolver> = OnceCell::new();
@@ -31,7 +30,7 @@ impl AppPath {
         if !app_log_dir.exists() {
             fs::create_dir_all(&app_log_dir)?;
         }
-
+        // format!()
         //复制路由
         let xray_routing_dir = AppPath::xray_routing_dir()?;
         if !xray_routing_dir.exists() {
@@ -42,13 +41,17 @@ impl AppPath {
                 .ok_or(anyhow::anyhow!("failed to get the app home dir"))?;
 
             let options = fs_extra::dir::CopyOptions::new().skip_exist(true);
-            log::info!("from:{},to:{}", xray_routing_dir.display(),preset_path.display());
+            log::info!(
+                "from:{},to:{}",
+                xray_routing_dir.display(),
+                preset_path.display()
+            );
             fs_extra::dir::copy(preset_path_str, app_dir.clone(), &options)
                 .with_context(|| format!("Failed to read xray_routing_dir, {}", preset_path_str))?;
         }
         //复制outbound
         let xray_outbound_dir = AppPath::xray_outbound_dir()?;
-        
+
         if !xray_outbound_dir.exists() {
             // fs::create_dir_all(&xray_outbound_dir);
             let preset_path = AppPath::app_core_dir().map(|path| path.join("outbound"))?;
@@ -57,7 +60,11 @@ impl AppPath {
                 .ok_or(anyhow::anyhow!("failed to get the app home dir"))?;
 
             let options = fs_extra::dir::CopyOptions::new().skip_exist(true);
-            log::info!("from:{},to:{}", xray_outbound_dir.display(),preset_path.display());
+            log::info!(
+                "from:{},to:{}",
+                xray_outbound_dir.display(),
+                preset_path.display()
+            );
             fs_extra::dir::copy(preset_path_str, app_dir.clone(), &options)
                 .with_context(|| format!("Failed to read xray_outbound_dir {}", preset_path_str))?;
         }
