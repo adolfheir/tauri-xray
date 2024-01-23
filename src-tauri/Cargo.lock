@@ -3042,9 +3042,9 @@ dependencies = [
 
 [[package]]
 name = "rustem_proxy"
-version = "0.1.4"
+version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b41017fe7a13beba919b01ba2cdeeb4181b411add14830179b8dd7c9cc107aae"
+checksum = "4326bd94bff6a447b9ec693f33668beb34bf12168ba034b7c12600dca501f82d"
 dependencies = [
  "winapi",
  "winreg 0.51.0",
