@@ -1,7 +1,7 @@
 {
   "name": "tauri-xray",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "RUST_LOG=debug  tauri dev --no-watch",

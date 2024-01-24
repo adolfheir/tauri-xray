@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - "dev/*"
+      - "release/*"
   workflow_dispatch:
 
 jobs:
