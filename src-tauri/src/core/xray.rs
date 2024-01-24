@@ -1,12 +1,10 @@
 use std::{fs, io::Write, str::FromStr};
-
-use anyhow::{bail, Context, Result};
-use log::logger;
-use std::collections::HashSet;
+use anyhow::{Context, Result};
 use sysinfo::{Pid, ProcessExt, System, SystemExt};
-use tauri::api::process::{Command, CommandChild, CommandEvent};
+use tauri::api::process::{Command, CommandEvent};
 
 use super::{config::IConfig, path};
+
 
 pub struct Xray {}
 
@@ -19,8 +17,8 @@ impl Xray {
                 let mut system = System::new();
                 system.refresh_all();
                 system.process(pid).map(|proc| {
-                    if proc.name().contains("clash") {
-                        log::debug!(target: "app", "kill old clash process");
+                    if proc.name().contains("xray") {
+                        log::debug!(target: "app", "kill old xray process");
                         proc.kill();
                     }
                 });
@@ -39,9 +37,11 @@ impl Xray {
             .ok_or(anyhow::anyhow!("failed to get the config dir"))?;
 
         let mut remove_from_paths = Vec::new();
-        remove_from_paths.push((confdir));
+        remove_from_paths.push(confdir);
         fs_extra::remove_items(&remove_from_paths)?;
         fs::create_dir_all(confdir)?;
+
+        log::debug!("test ");
 
         /* 开始复制配置 */
         let mut from_paths = Vec::new();
@@ -65,7 +65,7 @@ impl Xray {
         //复制outbound
         let outbound_path = path::AppPath::xray_outbound_dir()
             .map(|path| path.join(IConfig::active_outbound().unwrap_or_default()))?;
-        let outbound_temp_path = temp_path.join("98.outbounds.json");
+        let outbound_temp_path = temp_path.join("98.outbounds.tail.json");
         let options = fs_extra::file::CopyOptions::new();
         fs_extra::file::copy(outbound_path, outbound_temp_path, &options)?;
         //复制路由
@@ -101,17 +101,17 @@ impl Xray {
             while let Some(event) = rx.recv().await {
                 match event {
                     CommandEvent::Stdout(line) => {
-                        // log::info!(target: "app", "[xray stdout]: {line}");
+                        log::info!(target: "xray", "[xray stdout]: {line}");
                     }
                     CommandEvent::Stderr(err) => {
                         // let stdout = clash_api::parse_log(err.clone());
-                        log::warn!(target: "app", "[xray stderr]:  {err}");
+                        log::warn!(target: "xray", "[xray stderr]:  {err}");
                     }
                     CommandEvent::Error(err) => {
-                        log::error!(target: "app", "[xray err]: {err}");
+                        log::error!(target: "xray", "[xray err]: {err}");
                     }
                     CommandEvent::Terminated(_) => {
-                        log::warn!(target: "app", "xray core terminated");
+                        log::warn!(target: "xray", "xray core terminated");
                         break;
                     }
                     _ => {}

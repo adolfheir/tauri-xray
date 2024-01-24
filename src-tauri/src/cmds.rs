@@ -1,10 +1,5 @@
 use crate::core;
-use crate::core::config::IConfig;
-use crate::core::tray::Tray;
-use crate::{ret_err, wrap_err};
-use anyhow::{Context, Ok, Result};
-use tauri::Icon;
-type CmdResult<T = ()> = Result<T, String>;
+use anyhow::Context;
 
 #[tauri::command]
 pub fn greet(name: &str) -> String {

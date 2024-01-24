@@ -1,11 +1,11 @@
 use crate::core::path;
-use anyhow::{Error, Result};
+use anyhow::Result;
 use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 use std::fs::{self, File};
 use std::io::BufReader;
 use std::path::PathBuf;
-use std::sync::{Arc, Mutex, Once};
+use std::sync::Mutex;
 
 use super::path::AppPath;
 
@@ -40,7 +40,7 @@ lazy_static! {
     static ref PORT_CONFIG: Mutex<Option<PortConfig>> = Mutex::new(None);
     static ref ACTIVE_ROUTING: Mutex<Option<String>> = Mutex::new(None);
     static ref ACTIVE_OUTBOUND: Mutex<Option<String>> = Mutex::new(None);
-    static ref SYS_PORT_ENABLE: Mutex<Option<bool>> = Mutex::new(Some(true));
+    static ref SYS_PORT_ENABLE: Mutex<Option<bool>> = Mutex::new(Some(false));
     static ref AUTO_LAUNCH_ENABLE: Mutex<Option<bool>> = Mutex::new(Some(true)); // 新增的全局变量
 }
 
@@ -48,26 +48,26 @@ pub struct IConfig {}
 
 impl IConfig {
     pub fn active_routing() -> Option<String> {
-        ACTIVE_ROUTING.lock().ok().map(|v| v.clone()).flatten()
+        ACTIVE_ROUTING.lock().ok().and_then(|v| v.clone())
     }
 
     pub fn active_outbound() -> Option<String> {
-        ACTIVE_OUTBOUND.lock().ok().map(|v| v.clone()).flatten()
+        ACTIVE_OUTBOUND.lock().ok().and_then(|v| v.clone())
     }
 
     pub fn sys_port_enable() -> Option<bool> {
-        SYS_PORT_ENABLE.lock().ok().map(|v| v.clone()).flatten()
+        SYS_PORT_ENABLE.lock().ok().and_then(|v| *v)
     }
 
     pub fn auto_launch_enable() -> Option<bool> {
-        AUTO_LAUNCH_ENABLE.lock().ok().map(|v| v.clone()).flatten()
+        AUTO_LAUNCH_ENABLE.lock().ok().and_then(|v| *v)
     }
 
     pub fn port_config() -> Option<PortConfig> {
-        PORT_CONFIG.lock().ok().map(|v| v.clone()).flatten()
+        PORT_CONFIG.lock().ok().and_then(|v| v.clone())
     }
 
-    pub fn init_config() -> Result<(), Error> {
+    pub fn init_config() -> Result<()> {
         let user_config_json = IConfig::get_init_user_config();
 
         let active_routing = user_config_json.active_routing;
@@ -100,24 +100,24 @@ impl IConfig {
         Ok(())
     }
 
-    pub fn set_active_routing(new_data: String) -> Result<(), Error> {
+    pub fn set_active_routing(new_data: String) -> Result<()> {
         ACTIVE_ROUTING.lock().map(|mut v| *v = Some(new_data)).ok();
         IConfig::write_config()?;
         Ok(())
     }
 
-    pub fn set_active_outbound(new_data: String) -> Result<(), Error> {
+    pub fn set_active_outbound(new_data: String) -> Result<()> {
         ACTIVE_OUTBOUND.lock().map(|mut v| *v = Some(new_data)).ok();
         IConfig::write_config()?;
         Ok(())
     }
-    pub fn set_sys_port_enable(new_data: bool) -> Result<(), Error> {
+    pub fn set_sys_port_enable(new_data: bool) -> Result<()> {
         SYS_PORT_ENABLE.lock().map(|mut v| *v = Some(new_data)).ok();
         IConfig::write_config()?;
         Ok(())
     }
 
-    pub fn write_config() -> Result<(), Error> {
+    pub fn write_config() -> Result<()> {
         let new_config = UserConfigValue {
             active_routing: IConfig::active_routing().unwrap_or_default(),
             active_outbound: IConfig::active_outbound().unwrap_or_default(),
@@ -133,10 +133,10 @@ impl IConfig {
     }
 
     pub fn get_init_user_config() -> UserConfigValue {
-        let parsed_data = AppPath::config_json()
+        AppPath::config_json()
             .ok()
             .and_then(|file_path| File::open(file_path).ok())
-            .map(|file| BufReader::new(file))
+            .map(BufReader::new)
             .and_then(|reader| {
                 let result: Result<UserConfigValue, _> = serde_json::from_reader(reader);
                 result.ok()
@@ -146,9 +146,7 @@ impl IConfig {
                 active_outbound: String::default(),
                 sys_port_enable: true,
                 auto_launch_enable: true,
-            });
-
-        return parsed_data;
+            })
     }
 
     pub fn get_init_port_config() -> PortConfig {
